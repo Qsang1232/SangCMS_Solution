@@ -1,7 +1,8 @@
 /*
-    Ho ten sinh vien: Nguyen Van Teo
-    Ma sv: 123456789
-    Ngay tao: 15/05/2026
+ *Ho va ten :Nguy?n Qu?c Sang
+ *Msvv:2123110076
+ *Ngay tao:14/5/2026 
+ *version 1.0
  */
 
 
