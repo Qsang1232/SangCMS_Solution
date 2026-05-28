@@ -4,7 +4,7 @@
  * Ngay tao  : 28/05/2026 
  * Version   : 2.0 (Cập nhật Phân quyền & Bảo mật hệ thống)
  */
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
@@ -13,6 +13,7 @@ using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin")] // Chỉ tài khoản có Role là Admin mới được phép vào
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
