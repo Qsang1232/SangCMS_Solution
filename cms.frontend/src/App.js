@@ -1,35 +1,38 @@
 ﻿import React from 'react';
-import CategoryProductList from './components/CategoryProductList';
-import './App.css'; // File chứa các style tùy biến riêng của dự án
+import CategoryProductList from './components/CategoryProductList'; // Khớp 100% file thực tế của em
+import PostList from './components/PostList';
+import BlogCategoryList from './components/BlogCategoryList';
+import './App.css';
 
 function App() {
     return (
         <div className="container mt-5">
-            {/* Phần Header của Website */}
-            <header className="pb-3 mb-4 border-bottom">
+            <header className="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
                 <span className="fs-4 font-weight-bold text-dark text-uppercase">
-                    🛒 HỆ THỐNG CỬA HÀNG TRỰC TUYẾN - SANGCMS RETAIL
+                    👗 Fashion Boutique - Hệ Thống Quản Trị Nội Dung & Bán Hàng
                 </span>
+                <span className="badge badge-success px-3 py-2">Học Phần Chuyên Đề ASP.NET + ReactJS</span>
             </header>
 
             <div className="row">
-                {/* Cột bên trái (Chức năng Sidebar): Hiển thị bộ lọc danh mục sản phẩm */}
-                <div className="col-md-3">
+                {/* CỘT TRÁI: CHỨA CÁC BỘ LỌC PHÂN LOẠI DỮ LIỆU */}
+                <div className="col-md-4">
+                    {/* Phân loại phục vụ thương mại điện tử */}
                     <CategoryProductList />
+
+                    {/* BÀI TẬP TỰ LÀM: Phân loại phục vụ quản trị nội dung tin tức blog */}
+                    <BlogCategoryList />
                 </div>
 
-                {/* Cột bên phải (Chức năng Content): Dùng để hiển thị danh sách sản phẩm ở các bài học tiếp theo */}
-                <div className="col-md-9">
-                    <div className="jumbotron bg-light border p-5 rounded shadow-sm">
-                        <h2 className="display-5 font-weight-normal">Chào mừng đến với không gian trải nghiệm!</h2>
-                        <p className="lead mt-3 text-secondary">
-                            Khối dữ liệu bên thanh điều hướng trái đang được tải **Real-time** trực tiếp từ bảng <strong>CategoryProduct</strong> trong Database SQL Server thông qua nền tảng ASP.NET Core Web API (.NET 8.0).
-                        </p>
-                        <hr className="my-4" />
-                        <p className="text-muted">Hãy đảm bảo rằng bạn đã kích hoạt CORS ở Backend để dữ liệu không bị chặn hiển thị.</p>
-                    </div>
+                {/* CỘT PHẢI: CHỨA NỘI DUNG CHI TIẾT HIỂN THỊ CHÍNH */}
+                <div className="col-md-8">
+                    <PostList />
                 </div>
             </div>
+
+            <footer className="pt-3 mt-5 text-muted border-top text-center small">
+                <p>© 2026 - Đồ án thực hành phân tầng ASP.NET Core Web API kết hợp ReactJS Client-side</p>
+            </footer>
         </div>
     );
 }
