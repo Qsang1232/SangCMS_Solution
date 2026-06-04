@@ -1,0 +1,66 @@
+﻿@model CMS.Data.Entities.Post
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chỉnh sửa bài viết - Nguyễn Quốc Sang";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square"></i> CẬP NHẬT BÀI VIẾT</h4>
+            <small>Chỉnh sửa bởi: Nguyễn Quốc Sang - 2123110076</small>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tiêu đề bài viết:</label>
+                            <input asp-for="Title" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nội dung chi tiết:</label>
+                            <textarea asp-for="Content" class="form-control" rows="10" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Chuyên mục:</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList" required></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label d-block fw-bold">Ảnh hiện tại:</label>
+                            <img src="@Model.ImageUrl" alt="Current Image" class="img-thumbnail mb-2" style="max-height: 120px; object-fit: cover;" />
+                            <input type="file" name="uploadImage" class="form-control" accept="image/*" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Link URL ảnh (nếu có):</label>
+                            <input asp-for="ImageUrl" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ngày sửa đổi:</label>
+                            <input asp-for="CreatedDate" type="date" class="form-control" value="@Model.CreatedDate.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <hr />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning fw-bold text-dark">
+                                <i class="bi bi-save"></i> Cập nhật thay đổi
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Hủy / Quay lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
