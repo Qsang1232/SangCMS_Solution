@@ -1,0 +1,71 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+@model IEnumerable<CMS.Data.Entities.Product>
+
+<div class="container-fluid mt-3">
+    <h2 class="text-primary fw-bold text-uppercase">Danh sách sản phẩm</h2>
+    <hr />
+    <div class="mb-3">
+        <a asp-action="Create" class="btn btn-success fw-bold">
+            <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+        </a>
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th style="width:70px" class="text-center">ID</th>
+                <th style="width:100px" class="text-center">Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá bán</th>
+                <th>Số lượng kho</th>
+                <th style="width:170px" class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center fw-bold text-secondary">@item.Id</td>
+                        <td class="text-center">
+                            <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/no-image.png" : item.ImageUrl)"
+                                 alt="Product Image"
+                                 style="width:65px; height:65px; object-fit:cover; border-radius:5px; border: 1px solid #ddd;"
+                                 onerror="this.src='/images/no-image.png'" />
+                        </td>
+                        <td class="fw-bold text-dark">@item.Name</td>
+                        <td class="text-danger fw-bold">@item.Price.ToString("#,##0") đ</td>
+                        <td>
+                            @if (item.StockQuantity <= 0)
+                            {
+                                <span class="badge bg-danger">Hết hàng</span>
+                            }
+                            else
+                            {
+                                <span class="fw-bold text-success">@item.StockQuantity</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning fw-bold">
+                                <i class="bi bi-pencil-square"></i> Sửa
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger fw-bold"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm này?')">
+                                <i class="bi bi-trash"></i> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">Chưa có sản phẩm nào trong hệ thống.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

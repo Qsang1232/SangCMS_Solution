@@ -1,0 +1,36 @@
+﻿@model CMS.Data.Entities.Post
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết bài viết - Nguyễn Quốc Sang";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-dark py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-eye"></i> CHI TIẾT BÀI VIẾT HỆ THỐNG</h5>
+            <small>Mã số sinh viên: Nguyễn Quốc Sang - 2123110076</small>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded border shadow-sm w-100" style="max-height: 250px; object-fit: cover;" />
+                </div>
+                <div class="col-md-8">
+                    <h2 class="fw-bold text-primary">@Model.Title</h2>
+                    <div class="mb-3">
+                        <span class="badge bg-secondary p-2">Mã bài viết: #@Model.Id</span>
+                        <span class="badge bg-success p-2">Chuyên mục: @(Model.Category != null ? Model.Category.Name : "Chưa phân loại")</span>
+                        <span class="badge bg-dark p-2">Ngày đăng: @Model.CreatedDate.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <hr />
+                    <h6 class="fw-bold text-dark">Nội dung văn bản chi tiết:</h6>
+                    <p class="text-justify lh-base" style="white-space: pre-line; color: #495057;">@Model.Content</p>
+                </div>
+            </div>
+            <div class="mt-4 border-top pt-3 text-end">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4 fw-bold text-dark">Chỉnh sửa bài này</a>
+                <a asp-action="Index" class="btn btn-secondary px-4">Quay lại danh sách</a>
+            </div>
+        </div>
+    </div>
+</div>

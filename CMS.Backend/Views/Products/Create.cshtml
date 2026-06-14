@@ -1,0 +1,60 @@
+﻿@model CMS.Data.Entities.Product
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container mt-4" style="max-width: 900px;">
+    <h2 class="text-success fw-bold text-uppercase">Thêm sản phẩm mới</h2>
+    <hr />
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Tên sản phẩm:</label>
+                <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm..." required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Danh mục sản phẩm:</label>
+                <select asp-for="CategoryProductId" class="form-select" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        // Ép kiểu chuẩn về Model thực thể 'Category' (tương ứng bảng dbo.Categories)
+                        foreach (var cat in (IEnumerable<CMS.Data.Entities.Category>)ViewBag.Categories)
+                        {
+                            <option value="@cat.Id">@cat.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Giá bán (VNĐ):</label>
+                <input asp-for="Price" class="form-control" type="number" min="0" placeholder="Ví dụ: 250000" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Số lượng trong kho:</label>
+                <input asp-for="StockQuantity" class="form-control" type="number" min="0" placeholder="Ví dụ: 50" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tải hình ảnh lên từ máy tính:</label>
+            <input type="file" name="uploadedImage" class="form-control" accept="image/*" required />
+            <div class="form-text text-muted">Hỗ trợ các file ảnh định dạng (.jpg, .png, .jpeg, .webp)</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Mô tả chi tiết sản phẩm:</label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập thông tin sản phẩm..."></textarea>
+        </div>
+
+        <hr />
+        <div class="mb-4">
+            <button type="submit" class="btn btn-success px-4 fw-bold">Lưu vào hệ thống</button>
+            <a asp-action="Index" class="btn btn-secondary px-4">Quay lại danh sách</a>
+        </div>
+    </form>
+</div>

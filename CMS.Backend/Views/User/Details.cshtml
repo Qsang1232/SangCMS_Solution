@@ -1,0 +1,37 @@
+﻿@model CMS.Data.Entities.User
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết tài khoản - Nguyễn Quốc Sang";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle"></i> CHI TIẾT TÀI KHOẢN HỆ THỐNG</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-sm-4 text-muted mb-3">Mã định danh (Id):</div>
+                <div class="col-sm-8 fw-bold mb-3">#@Model.Id</div>
+
+                <div class="col-sm-4 text-muted mb-3">Tên tài khoản đăng nhập:</div>
+                <div class="col-sm-8 fw-bold text-primary mb-3">@Model.Username</div>
+
+                <div class="col-sm-4 text-muted mb-3">Họ và tên người sở hữu:</div>
+                <div class="col-sm-8 mb-3">@Model.FullName</div>
+
+                <div class="col-sm-4 text-muted mb-3">Quyền hạn hệ thống:</div>
+                <div class="col-sm-8 mb-3">
+                    <span class="badge bg-dark">@Model.Role</span>
+                </div>
+
+                <div class="col-sm-4 text-muted mb-3">Mật khẩu hiện tại (Chưa băm):</div>
+                <div class="col-sm-8 text-danger fw-mono mb-3">@Model.PasswordHash</div>
+            </div>
+            <div class="border-top pt-3 text-end">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-dark fw-bold me-2">Sửa thông tin</a>
+                <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+            </div>
+        </div>
+    </div>
+</div>

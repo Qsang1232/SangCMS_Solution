@@ -1,0 +1,70 @@
+﻿@model CMS.Data.Entities.Product
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container mt-4" style="max-width: 900px;">
+    <h2 class="text-warning fw-bold text-uppercase">Chỉnh sửa sản phẩm</h2>
+    <hr />
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ImageUrl" />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Tên sản phẩm:</label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Danh mục sản phẩm:</label>
+                <select asp-for="CategoryProductId" class="form-select" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        // Ép kiểu chuẩn về Model thực thể 'Category' (tương ứng bảng dbo.Categories)
+                        foreach (var cat in (IEnumerable<CMS.Data.Entities.Category>)ViewBag.Categories)
+                        {
+                            <option value="@cat.Id" selected="@(cat.Id == Model.CategoryProductId ? "selected" : null)">@cat.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Giá bán (VNĐ):</label>
+                <input asp-for="Price" class="form-control" type="number" min="0" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Số lượng trong kho:</label>
+                <input asp-for="StockQuantity" class="form-control" type="number" min="0" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Hình ảnh hiển thị sản phẩm:</label>
+            <div class="mb-2">
+                <small class="text-muted d-block mb-1">Ảnh đang dùng hiện tại:</small>
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/no-image.png" : Model.ImageUrl)"
+                     alt="Current Image"
+                     style="width: 110px; height: 110px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px;"
+                     onerror="this.src='/images/no-image.png'" />
+            </div>
+            <label class="form-label small text-primary fw-bold">Chọn ảnh mới thay thế (Nếu muốn thay đổi):</label>
+            <input type="file" name="uploadedImage" class="form-control" accept="image/*" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Mô tả sản phẩm:</label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <hr />
+        <div class="mb-4">
+            <button type="submit" class="btn btn-warning px-4 fw-bold">Cập nhật thay đổi</button>
+            <a asp-action="Index" class="btn btn-secondary px-4">Hủy bỏ</a>
+        </div>
+    </form>
+</div>

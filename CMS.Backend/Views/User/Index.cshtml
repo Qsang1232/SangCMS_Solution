@@ -1,0 +1,78 @@
+﻿@model IEnumerable<CMS.Data.Entities.User>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Quản lý thành viên - Nguyễn Quốc Sang";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3">
+        <div>
+            <h2 class="text-dark fw-bold mb-0">QUẢN LÝ THÀNH VIÊN</h2>
+            <small class="text-muted">Sinh viên: <strong>Nguyễn Quốc Sang</strong> - MSV: 2123110076</small>
+        </div>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Thêm thành viên mới
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> Chưa có tài khoản nào được khởi tạo trong SQL Server.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var user in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column p-3">
+
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                    <i class="bi bi-shield-lock fs-4"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="fw-bold mb-0 text-dark">@user.Username</h5>
+                                    <span class="badge bg-secondary">ID: #@user.Id</span>
+                                </div>
+                            </div>
+
+                            <div class="flex-grow-1 border-top pt-2">
+                                <p class="mb-1 small"><strong><i class="bi bi-person-badge"></i> Họ và tên:</strong> @user.FullName</p>
+                                <p class="mb-1 small">
+                                    <strong><i class="bi bi-person-gear"></i> Vai trò:</strong>
+                                    @if (user.Role == "Admin")
+                                    {
+                                        <span class="badge bg-danger">Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">Editor</span>
+                                    }
+                                </p>
+                                <p class="mb-1 small text-truncate text-muted"><strong><i class="bi bi-key"></i> Chuỗi Hash:</strong> @user.PasswordHash</p>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-2">
+                                <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-xs btn-outline-dark btn-sm">Chi tiết</a>
+                                <div>
+                                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
+                                        Sửa
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Bạn có chắc chắn muốn xóa thành viên @user.Username không?')">
+                                        Xóa
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
