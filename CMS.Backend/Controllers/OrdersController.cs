@@ -7,87 +7,99 @@ using System.Threading.Tasks;
 using CMS.Data;
 using CMS.Data.Entities;
 
-[Authorize]
-public class OrdersController : Controller
+namespace CMS.Backend.Controllers // Thêm namespace cho chuẩn
 {
-    private readonly ApplicationDbContext _context;
-    public OrdersController(ApplicationDbContext context) => _context = context;
-
-    // 1. Hiển thị danh sách đơn hàng
-    public async Task<IActionResult> Index()
+    // Yêu cầu phải đăng nhập mới được vào quản lý đơn hàng
+    [Authorize]
+    public class OrdersController : Controller
     {
-        var orders = await _context.Orders.OrderByDescending(o => o.OrderDate).ToListAsync();
-        return View(orders);
-    }
+        private readonly ApplicationDbContext _context;
+        public OrdersController(ApplicationDbContext context) => _context = context;
 
-    // 2. Xem chi tiết một đơn hàng
-    public async Task<IActionResult> Details(int id)
-    {
-        var order = await _context.Orders
-            .Include(o => o.OrderDetails)
-            .FirstOrDefaultAsync(o => o.Id == id);
-
-        if (order == null) return NotFound();
-        return View(order);
-    }
-
-    // 3. GET: Thêm mới đơn hàng
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // 4. POST: Thêm mới đơn hàng
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Order order)
-    {
-        order.OrderDate = DateTime.Now;
-        order.Status = 0; // 0: Chờ duyệt
-
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    // 5. GET: Chỉnh sửa trạng thái đơn hàng
-    public async Task<IActionResult> Edit(int id)
-    {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null) return NotFound();
-        return View(order);
-    }
-
-    // 6. POST: Chỉnh sửa trạng thái đơn hàng
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Order order)
-    {
-        var dbOrder = await _context.Orders.FindAsync(id);
-        if (dbOrder == null) return NotFound();
-
-        // Cập nhật các trường cho phép sửa
-        dbOrder.Status = order.Status;
-        dbOrder.CustomerName = order.CustomerName;
-        dbOrder.Address = order.Address;
-        dbOrder.Notes = order.Notes;
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    // 7. Xóa đơn hàng
-    public async Task<IActionResult> Delete(int id)
-    {
-        var order = await _context.Orders.FindAsync(id);
-        if (order != null)
+        // 1. Hiển thị danh sách đơn hàng
+        public async Task<IActionResult> Index()
         {
-            var details = _context.OrderDetails.Where(d => d.OrderId == id);
-            _context.OrderDetails.RemoveRange(details);
-
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
+            var orders = await _context.Orders.OrderByDescending(o => o.OrderDate).ToListAsync();
+            return View(orders);
         }
-        return RedirectToAction(nameof(Index));
+
+        // 2. Xem chi tiết một đơn hàng
+        public async Task<IActionResult> Details(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return NotFound();
+            return View(order);
+        }
+
+        // 3. GET: Thêm mới đơn hàng
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // 4. POST: Thêm mới đơn hàng
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Order order)
+        {
+            order.OrderDate = DateTime.Now;
+            order.Status = 0; // 0: Chờ duyệt
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Tạo đơn hàng mới thành công!"; // Thông báo
+            return RedirectToAction(nameof(Index));
+        }
+
+        // 5. GET: Chỉnh sửa trạng thái đơn hàng
+        public async Task<IActionResult> Edit(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) return NotFound();
+            return View(order);
+        }
+
+        // 6. POST: Chỉnh sửa trạng thái đơn hàng
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Order order)
+        {
+            var dbOrder = await _context.Orders.FindAsync(id);
+            if (dbOrder == null) return NotFound();
+
+            // CẬP NHẬT ĐẦY ĐỦ CÁC TRƯỜNG BAO GỒM CẢ CỘT TỪ REACT GỬI XUỐNG
+            dbOrder.Status = order.Status;
+            dbOrder.CustomerName = order.CustomerName;
+            dbOrder.Phone = order.Phone;               // Đã bổ sung
+            dbOrder.TotalAmount = order.TotalAmount;   // Đã bổ sung
+            dbOrder.Address = order.Address;
+            dbOrder.Notes = order.Notes;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"Cập nhật đơn hàng #{id} thành công!"; // Thông báo
+            return RedirectToAction(nameof(Index));
+        }
+
+        // 7. Xóa đơn hàng
+        public async Task<IActionResult> Delete(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
+            {
+                var details = _context.OrderDetails.Where(d => d.OrderId == id);
+                _context.OrderDetails.RemoveRange(details);
+
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"Đã xóa thành công đơn hàng #{id}."; // Thông báo
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

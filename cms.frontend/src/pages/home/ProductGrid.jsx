@@ -1,84 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import productService from '../../services/productService';
-// IMPORT file thành phần component  CON VÀO ĐỂ SỬ DỤNG
 import ProductCard from '../../components/ProductCard';
-
-
-
 
 function ProductGrid() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-
-
-
     useEffect(() => {
-        const fetchAllProducts = async () => {
+        const fetchProducts = async () => {
             try {
                 setLoading(true);
                 const data = await productService.getAllProducts();
-                setProducts(data);
+                // Chỉ lấy 8 sản phẩm mới nhất hiển thị trang chủ cho đẹp
+                setProducts(data.slice(0, 8));
             } catch (error) {
-                console.error("Lỗi hệ thống khi tải danh sách sản phẩm:", error);
+                console.error("Lỗi hệ thống khi tải sản phẩm:", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchAllProducts();
+        fetchProducts();
     }, []);
 
-
-
-
-    if (loading) {
-        return (
-            <div className="container my-5 text-center">
-                <div className="spinner-border text-primary" role="status"></div>
-                <p className="mt-2 text-muted">Đang tải danh sách trang phục mới nhất...</p>
-            </div>
-        );
-    }
-
-
-
+    if (loading) return <div className="text-center py-5"><div className="spinner-border text-info"></div></div>;
 
     return (
-        <section className="product-grid-wrapper py-4">
+        <section className="product-grid-wrapper py-5 bg-light">
             <div className="container">
-
-
-                <div className="section-heading mb-4 d-flex justify-content-between align-items-center border-bottom pb-2">
+                <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                     <h4 className="font-weight-bold text-uppercase m-0" style={{ color: '#005088' }}>
-                        <i className="fas fa-sparkles mr-2 text-warning"></i> Sản phẩm nổi bật
+                        Sản phẩm nổi bật
                     </h4>
-                    <span className="text-muted" style={{ fontSize: '14px' }}>
-                        Hiển thị ({products.length}) sản phẩm
-                    </span>
                 </div>
 
-
-
-
-                {/* KHUNG LƯỚI GRID SYSTEM */}
                 <div className="row">
                     {products.map((product) => (
-                        <div className="col-xl-3 col-lg-4 col-sm-6 col-12 mb-4" key={product.id}>
-                            {/* CHÈN ĐÚNG file thành phần component  CON TẠI ĐÂY VÀ TRUYỀN DỮ LIỆU ĐI */}
+                        <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product.id}>
                             <ProductCard item={product} />
                         </div>
                     ))}
                 </div>
-
-
-
-
             </div>
         </section>
     );
 }
-
-
-
 
 export default ProductGrid;

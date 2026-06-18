@@ -1,178 +1,147 @@
-import React from 'react';
-// Import thành phần Link để chuyển trang mượt mà không bị tải lại trang (Hard-Reload)
-import { Link, useLocation } from 'react-router-dom';
-
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 function Header() {
-    // Dùng hook useLocation của react-router-dom để bắt đường dẫn URL hiện tại
     const location = useLocation();
+    const navigate = useNavigate();
 
+    // STATE: Lưu thông tin khách hàng đang đăng nhập
+    const [customer, setCustomer] = useState(null);
 
-    // Hàm xử lý giả lập khi bấm Tìm kiếm nhanh
+    // Dùng useEffect để lấy thông tin từ LocalStorage mỗi khi load Header
+    useEffect(() => {
+        const userData = localStorage.getItem('bikeCustomer');
+        if (userData) {
+            setCustomer(JSON.parse(userData));
+        }
+    }, []);
+
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        alert("Chức năng tìm kiếm nhanh trên Header sẽ kết nối API Search ở các buổi sau!");
+        alert("Chức năng tìm kiếm sản phẩm xe đạp sẽ được cập nhật!");
     };
 
+    // Hàm Xử lý Đăng xuất
+    const handleLogout = () => {
+        if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+            localStorage.removeItem('bikeCustomer'); // Xóa bộ nhớ
+            setCustomer(null); // Xóa state
+            navigate('/login'); // Đá về trang đăng nhập
+        }
+    };
 
-    // Hàm hỗ trợ kiểm tra trang hiện tại để gán hiệu ứng làm sáng (Active) menu chuẩn v4
+    // Hàm kiểm tra active menu
     const isActive = (path) => {
-        // Nếu trùng khớp URL, trả về class 'active font-weight-bold text-primary', ngược lại trả về 'text-dark'
-        return location.pathname === path ? 'active font-weight-bold text-primary' : 'text-dark';
+        return location.pathname === path ? 'active font-weight-bold' : 'text-dark';
     };
-
 
     return (
         <header className="main-header-wrapper bg-white shadow-sm sticky-top">
+            {/* CSS nội bộ hỗ trợ hover mượt mà */}
+            <style>
+                {`
+                    .nav-link.active { color: #FF5A00 !important; border-bottom: 2px solid #FF5A00; }
+                    .nav-link:hover { color: #FF5A00 !important; }
+                    .transition-link:hover { color: #FF5A00 !important; }
+                `}
+            </style>
 
-
-            {/* ──────────────────────────────────────────────────────── */}
-            {/* TẦNG TIỆN ÍCH 1: THANH TOP BAR (Cú pháp chuẩn Bootstrap 4) */}
-            {/* ──────────────────────────────────────────────────────── */}
-            <div className="top-bar bg-dark py-2 text-white" style={{ fontSize: '13px' }}>
+            {/* TẦNG 1: TOP BAR */}
+            <div className="top-bar py-2 text-white" style={{ backgroundColor: '#1a1a1a', fontSize: '13px' }}>
                 <div className="container d-flex justify-content-between align-items-center">
-                    {/* Bên trái: Hotline & Email (Sử dụng mr-3 chuẩn v4) */}
                     <div className="top-bar-left">
-                        <span className="mr-3">
-                            <i className="fas fa-phone-alt mr-1"></i> Hotline: 090x.xxx.xxx
+                        <span className="mr-4">
+                            <i className="fas fa-phone-alt mr-2" style={{ color: '#FF5A00' }}></i> Hotline: 090x.xxx.xxx
                         </span>
-                        <span>
-                            <i className="fas fa-envelope mr-1"></i> Email: support@sangcms.retail
+                        <span className="d-none d-md-inline">
+                            <i className="fas fa-wrench mr-2" style={{ color: '#FF5A00' }}></i> Hotline Bảo Dưỡng: 080x.xxx.xxx
                         </span>
                     </div>
-                    {/* Bên phải: Nút Đăng nhập / Đăng ký nhanh (Sử dụng mr-3 chuẩn v4) */}
-                    <div className="top-bar-right">
-                        <Link to="/login" className="text-white mr-3 text-decoration-none transition-link">
-                            <i className="fas fa-user mr-1"></i> Đăng nhập
-                        </Link>
-                        <Link to="/register" className="text-white text-decoration-none transition-link">
-                            <i className="fas fa-user-plus mr-1"></i> Đăng ký
-                        </Link>
+
+                    {/* KHU VỰC THAY ĐỔI: KIỂM TRA ĐĂNG NHẬP */}
+                    <div className="top-bar-right d-flex align-items-center">
+                        {customer ? (
+                            // NẾU ĐÃ ĐĂNG NHẬP
+                            <>
+                                <span className="text-light mr-3">
+                                    <i className="fas fa-user-circle mr-1" style={{ color: '#FF5A00', fontSize: '16px' }}></i>
+                                    Xin chào, <strong style={{ color: '#11CAA0' }}>{customer.fullName}</strong>
+                                </span>
+                                <button
+                                    onClick={handleLogout}
+                                    className="btn btn-link text-light text-decoration-none p-0 transition-link"
+                                    style={{ fontSize: '13px' }}
+                                >
+                                    <i className="fas fa-sign-out-alt mr-1"></i> Đăng xuất
+                                </button>
+                            </>
+                        ) : (
+                            // NẾU CHƯA ĐĂNG NHẬP
+                            <>
+                                <Link to="/login" className="text-light mr-3 text-decoration-none transition-link">
+                                    <i className="fas fa-user mr-1"></i> Đăng nhập
+                                </Link>
+                                <Link to="/register" className="text-light text-decoration-none transition-link">
+                                    <i className="fas fa-user-plus mr-1"></i> Đăng ký
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
 
-
-            {/* ──────────────────────────────────────────────────────── */}
-            {/* TẦNG TIỆN ÍCH 2: KHU VỰC CHÍNH (Logo, Search Bar & Giỏ hàng) */}
-            {/* ──────────────────────────────────────────────────────── */}
+            {/* TẦNG 2: LOGO & SEARCH (Giữ nguyên của bạn) */}
             <div className="main-header py-3 border-bottom">
                 <div className="container">
                     <div className="row align-items-center">
-
-
-                        {/* 1. Cột Logo Thương Hiệu */}
                         <div className="col-md-3 col-6">
                             <Link to="/" className="text-decoration-none">
-                                <h3 className="font-weight-bold m-0" style={{ color: '#005088', letterSpacing: '1px' }}>
-                                   SangCMS<span style={{ color: '#11CAA0' }}>.Fashion</span>
+                                <h3 className="font-weight-bold m-0 text-dark" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>
+                                    SangCMS<span style={{ color: '#FF5A00' }}>.Bikes</span>
                                 </h3>
+                                <small className="text-muted" style={{ fontSize: '11px', letterSpacing: '2px' }}>Premium Cycling</small>
                             </Link>
                         </div>
 
-
-                        {/* 2. Cột Ô Tìm Kiếm Sản Phẩm (Sử dụng border-right-0 chuẩn v4) */}
                         <div className="col-md-6 d-none d-md-block">
                             <form className="input-group" onSubmit={handleSearchSubmit}>
-                                <input
-                                    type="text"
-                                    className="form-control border-right-0"
-                                    placeholder="Tìm kiếm mẫu đầm dạ hội, sơ mi công sở..."
-                                    style={{ borderRadius: '20px 0 0 20px', fontSize: '14px' }}
-                                />
+                                <input type="text" className="form-control border-right-0 shadow-none" placeholder="Tìm kiếm xe đạp MTB, Road, phụ kiện..." style={{ borderRadius: '25px 0 0 25px', fontSize: '14px', borderColor: '#e0e0e0' }} />
                                 <div className="input-group-append">
-                                    <button
-                                        className="btn btn-primary border-left-0 px-4"
-                                        type="submit"
-                                        style={{
-                                            borderRadius: '0 20px 20px 0',
-                                            backgroundColor: '#005088',
-                                            borderColor: '#005088'
-                                        }}
-                                    >
+                                    <button className="btn px-4 text-white" type="submit" style={{ borderRadius: '0 25px 25px 0', backgroundColor: '#FF5A00', borderColor: '#FF5A00' }}>
                                         <i className="fas fa-search"></i>
                                     </button>
                                 </div>
                             </form>
                         </div>
 
-
-                        {/* 3. Cột Giỏ Hàng Nhanh (Sử dụng text-right chuẩn v4) */}
                         <div className="col-md-3 col-6 text-right">
-                            <Link to="/cart" className="btn position-relative p-2" style={{ color: '#005088', fontSize: '22px' }}>
-                                <i className="fas fa-shopping-bag"></i>
-                                {/* Vòng tròn badge đỏ số lượng giỏ hàng sống */}
-                                <span
-                                    className="badge badge-pill position-absolute"
-                                    style={{
-                                        top: '0',
-                                        right: '0',
-                                        backgroundColor: '#11CAA0',
-                                        color: '#fff',
-                                        fontSize: '11px',
-                                        padding: '4px 6px'
-                                    }}
-                                >
-                                    0
+                            <Link to="/cart" className="btn position-relative p-2 text-dark transition-link" style={{ fontSize: '24px' }}>
+                                <i className="fas fa-shopping-cart"></i>
+                                <span className="badge badge-pill position-absolute" style={{ top: '0', right: '-5px', backgroundColor: '#FF5A00', color: '#fff', fontSize: '11px', border: '2px solid #fff' }}>
+                                    {/* Bạn có thể code thêm lấy số lượng giỏ hàng thật vào đây sau */}
+                                    2
                                 </span>
                             </Link>
                         </div>
-
-
                     </div>
                 </div>
             </div>
 
-
-            {/* ──────────────────────────────────────────────────────── */}
-            {/* TẦNG TIỆN ÍCH 3: THANH MENU ĐIỀU HƯỚNG CHÍNH (BOOTSTRAP 4.6.2) */}
-            {/* ──────────────────────────────────────────────────────── */}
-            <div className="main-navigation bg-white py-2">
+            {/* TẦNG 3: MENU ĐIỀU HƯỚNG */}
+            <div className="main-navigation bg-white">
                 <div className="container">
                     <nav className="navbar navbar-expand p-0">
-                        {/* Ứng dụng hệ lớp nav của Bootstrap 4 để quản lý danh sách menu dọc/ngang */}
-                        <ul className="navbar-nav w-100">
-
-
-                            {/* Menu 1: Trang Chủ (Sử dụng mr-4 để thay thế thuộc tính gap-2 của v5) */}
-                            <li className="nav-item mr-4">
-                                <Link to="/" className={`nav-link p-0 text-decoration-none ${isActive('/')}`} style={{ transition: 'all 0.2s' }}>
-                                    Trang Chủ
-                                </Link>
-                            </li>
-
-
-                            {/* Menu 2: Cửa Hàng */}
-                            <li className="nav-item mr-4">
-                                <Link to="/shop" className={`nav-link p-0 text-decoration-none ${isActive('/shop')}`} style={{ transition: 'all 0.2s' }}>
-                                    Cửa Hàng
-                                </Link>
-                            </li>
-
-
-                            {/* Menu 3: Tin Tức / Blog */}
-                            <li className="nav-item mr-4">
-                                <Link to="/blog" className={`nav-link p-0 text-decoration-none ${isActive('/blog')}`} style={{ transition: 'all 0.2s' }}>
-                                    Tin Tức / Blog
-                                </Link>
-                            </li>
-
-
-                            {/* Menu 4: Về Chúng Tôi */}
-                            <li className="nav-item">
-                                <Link to="/about" className={`nav-link p-0 text-decoration-none ${isActive('/about')}`} style={{ transition: 'all 0.2s' }}>
-                                    Về Chúng Tôi
-                                </Link>
-                            </li>
-
-
+                        <ul className="navbar-nav w-100 justify-content-center pt-2 pb-2">
+                            <li className="nav-item mx-3"><Link to="/" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Trang Chủ</Link></li>
+                            <li className="nav-item mx-3"><Link to="/shop" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/shop')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Cửa Hàng</Link></li>
+                            <li className="nav-item mx-3"><Link to="/blog" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/blog')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Tin Tức</Link></li>
+                            <li className="nav-item mx-3"><Link to="/post" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/post')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Cộng Đồng Đạp Xe</Link></li>
                         </ul>
                     </nav>
                 </div>
             </div>
-
-
         </header>
     );
 }
+
 export default Header;
