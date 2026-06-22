@@ -1,6 +1,6 @@
 import React from 'react';
 
-const IMAGE_BASE_URL = "https://localhost:7111"; // Đảm bảo khớp C# của bạn
+const IMAGE_BASE_URL = process.env.REACT_APP_API_URL;
 
 function CartTable({ cartItems, formatPrice, onIncrease, onDecrease, onRemove }) {
     return (

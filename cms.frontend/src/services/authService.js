@@ -1,4 +1,4 @@
-﻿import axiosClient from '../api/axiosClient'; // Đã sửa lại đường dẫn trỏ về thư mục api
+﻿import axiosClient from '../api/axiosClient';
 
 const authService = {
     login: (credentials) => {
@@ -6,6 +6,10 @@ const authService = {
     },
     register: (userData) => {
         return axiosClient.post('/CustomersApi/register', userData);
+    },
+    // THÊM HÀM NÀY ĐỂ GỌI API QUÊN MẬT KHẨU
+    forgotPassword: (data) => {
+        return axiosClient.post('/CustomersApi/forgot-password', data);
     }
 };
 

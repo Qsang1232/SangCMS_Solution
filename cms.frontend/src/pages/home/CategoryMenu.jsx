@@ -18,37 +18,59 @@ function CategoryMenu() {
         fetchCategories();
     }, []);
 
-    // Hàm chuyển sang trang Shop khi click vào danh mục
     const handleCategoryClick = () => {
         navigate('/shop');
     };
 
     return (
-        <section className="category-menu-wrapper py-4 bg-white border-bottom">
+        <section className="category-menu-wrapper py-5 bg-white border-bottom">
             <div className="container">
-                <ul className="nav nav-pills nav-fill flex-column flex-sm-row">
-                    <li className="nav-item m-1">
-                        <button
-                            className="nav-link w-100 font-weight-bold border-0 text-uppercase py-3 text-white"
-                            style={{ borderRadius: '8px', fontSize: '14px', backgroundColor: '#005088' }}
+                <div className="text-center mb-4">
+                    <h4 className="font-weight-bold text-uppercase" style={{ color: '#005088' }}>Mua Sắm Theo Danh Mục</h4>
+                </div>
+
+                {/* Lưới các khối vuông bo góc hiển thị danh mục */}
+                <div className="row justify-content-center text-center">
+                    {/* Khối tĩnh: Tất cả sản phẩm */}
+                    <div className="col-6 col-sm-4 col-md-2 mb-3">
+                        <div
+                            className="category-box p-3 shadow-sm rounded-lg cursor-pointer transition-all h-100 d-flex flex-column justify-content-center"
+                            style={{ backgroundColor: '#f8f9fa', border: '1px solid #eee' }}
                             onClick={handleCategoryClick}
                         >
-                            Tất cả sản phẩm
-                        </button>
-                    </li>
+                            <i className="fa-solid fa-bicycle text-primary mb-2" style={{ fontSize: '32px' }}></i>
+                            <span className="d-block font-weight-bold text-dark small text-uppercase mt-2">Tất Cả</span>
+                        </div>
+                    </div>
+
+                    {/* Vòng lặp render các danh mục từ database */}
                     {categories.map((cat) => (
-                        <li className="nav-item m-1" key={cat.id}>
-                            <button
-                                className="nav-link w-100 font-weight-bold border-0 text-uppercase py-3 text-secondary bg-light"
-                                style={{ borderRadius: '8px', fontSize: '14px' }}
+                        <div className="col-6 col-sm-4 col-md-2 mb-3" key={cat.id}>
+                            <div
+                                className="category-box p-3 shadow-sm rounded-lg cursor-pointer transition-all h-100 d-flex flex-column justify-content-center"
+                                style={{ backgroundColor: '#f8f9fa', border: '1px solid #eee' }}
                                 onClick={handleCategoryClick}
                             >
-                                {cat.name}
-                            </button>
-                        </li>
+                                <i className="fa-solid fa-gear text-secondary mb-2" style={{ fontSize: '32px' }}></i>
+                                <span className="d-block font-weight-bold text-dark small text-uppercase mt-2">{cat.name}</span>
+                            </div>
+                        </div>
                     ))}
-                </ul>
+                </div>
             </div>
+
+            {/* Thêm CSS cho khối vuông tạo hiệu ứng hover mượt mà */}
+            <style>{`
+                .category-box:hover { 
+                    transform: translateY(-5px); 
+                    border-color: #FF5A00 !important; 
+                    background-color: #fff !important; 
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+                }
+                .category-box:hover i { color: #FF5A00 !important; }
+                .cursor-pointer { cursor: pointer; }
+                .transition-all { transition: all 0.3s ease; }
+            `}</style>
         </section>
     );
 }

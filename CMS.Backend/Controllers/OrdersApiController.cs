@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CMS.Data;
 using CMS.Data.Entities;
+using CMS.Backend.Services;
 
 namespace CMS.Backend.Controllers
 {
@@ -13,27 +14,25 @@ namespace CMS.Backend.Controllers
     public class OrdersApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService; // Tiêm dịch vụ gửi Email
 
-        public OrdersApiController(ApplicationDbContext context)
+        public OrdersApiController(ApplicationDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // ==========================================
-        // MỤC 4: API LẤY DANH SÁCH TOÀN BỘ ĐƠN HÀNG (KÈM KHÁCH HÀNG)
-        // URL: GET /api/OrdersApi
+        // 1. API LẤY DANH SÁCH TOÀN BỘ ĐƠN HÀNG
         // ==========================================
         [HttpGet]
         public async Task<IActionResult> GetAllOrders()
         {
             try
             {
-                // Dùng .Include(o => o.Customer) nếu database của bạn có bảng Customers riêng lẻ
-                // Hoặc nếu bạn lưu trực tiếp tên vào bảng Order thì bỏ Include đi.
                 var orders = await _context.Orders
                     .OrderByDescending(o => o.OrderDate)
                     .ToListAsync();
-
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -43,21 +42,18 @@ namespace CMS.Backend.Controllers
         }
 
         // ==========================================
-        // MỤC 5: API LẤY CHI TIẾT CỦA MỘT ĐƠN HÀNG (KÈM SẢN PHẨM)
-        // URL: GET /api/OrdersApi/{orderId}/details
+        // 2. API LẤY CHI TIẾT CỦA MỘT ĐƠN HÀNG
         // ==========================================
         [HttpGet("{orderId}/details")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
             try
             {
-                // Kiểm tra đơn hàng có tồn tại không
                 var orderExists = await _context.Orders.AnyAsync(o => o.Id == orderId);
                 if (!orderExists) return NotFound("Không tìm thấy đơn hàng yêu cầu.");
 
-                // Lấy danh sách chi tiết đơn hàng, nạp kèm thông tin Product để lấy Name, Price...
                 var details = await _context.OrderDetails
-                    .Include(d => d.ProductId)
+                    .Include(d => d.ProductId) // Nếu lỗi Include, bỏ dòng này đi
                     .Where(d => d.OrderId == orderId)
                     .ToListAsync();
 
@@ -70,48 +66,95 @@ namespace CMS.Backend.Controllers
         }
 
         // ==========================================
-        // MỤC 3: API LẤY DANH SÁCH KHÁCH HÀNG (Nếu cần dùng riêng)
-        // URL: GET /api/OrdersApi/customers
+        // 3. API ĐẶT HÀNG MỚI (TẠO ĐƠN & TRỪ TỒN KHO)
         // ==========================================
-        [HttpGet("customers")]
-        public async Task<IActionResult> GetAllCustomers()
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder([FromBody] Order orderRequest)
         {
+            if (orderRequest == null || orderRequest.OrderDetails == null || !orderRequest.OrderDetails.Any())
+                return BadRequest(new { message = "Giỏ hàng trống hoặc dữ liệu không hợp lệ." });
+
+            // Bật Transaction để bảo vệ toàn vẹn dữ liệu
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
-                // Giả định bạn có DbSet<Customer> Customers trong ApplicationDbContext
-                var customers = await _context.Customers.ToListAsync();
-                return Ok(customers);
+                orderRequest.OrderDate = DateTime.Now;
+                orderRequest.Status = 0; // Chờ duyệt
+
+                var details = orderRequest.OrderDetails.ToList();
+                orderRequest.OrderDetails = null; // Tạm ngắt liên kết để Insert Order trước
+
+                _context.Orders.Add(orderRequest);
+                await _context.SaveChangesAsync();
+
+                decimal totalAmount = 0;
+
+                foreach (var item in details)
+                {
+                    var product = await _context.Products.FindAsync(item.ProductId);
+
+                    if (product == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return BadRequest(new { message = $"Sản phẩm mã #{item.ProductId} không tồn tại!" });
+                    }
+
+                    // KIỂM TRA CHỐNG TRÀN KHO
+                    if (product.StockQuantity < item.Quantity)
+                    {
+                        await transaction.RollbackAsync();
+                        return BadRequest(new { message = $"Sản phẩm [{product.Name}] chỉ còn {product.StockQuantity} chiếc trong kho!" });
+                    }
+
+                    // Trừ tồn kho
+                    product.StockQuantity -= item.Quantity;
+                    _context.Products.Update(product);
+
+                    item.OrderId = orderRequest.Id;
+                    _context.OrderDetails.Add(item);
+                    totalAmount += (item.Quantity * item.Price);
+                }
+
+                orderRequest.TotalAmount = totalAmount;
+                _context.Orders.Update(orderRequest);
+                await _context.SaveChangesAsync();
+
+                // Chốt Transaction
+                await transaction.CommitAsync();
+
+                // ===============================================
+                // GỬI EMAIL XÁC NHẬN CHO KHÁCH HÀNG
+                // ===============================================
+                if (!string.IsNullOrEmpty(orderRequest.CustomerName))
+                {
+                    // Lấy email để test hoặc nhận từ React
+                    string customerEmail = "sangnguyenquoc111@gmail.com"; // Đổi thành Email thật nếu cần
+
+                    string subject = $"[SangCMS Bikes] Xác nhận đơn hàng #{orderRequest.Id} thành công!";
+                    string body = $@"
+                        <h3>Chào {orderRequest.CustomerName},</h3>
+                        <p>Cảm ơn bạn đã đặt mua hàng tại SangCMS Bikes.</p>
+                        <p>Mã đơn hàng: <strong>#{orderRequest.Id}</strong></p>
+                        <p>Tổng thanh toán: <strong style='color:red;'>{orderRequest.TotalAmount:N0} đ</strong></p>
+                        <p>Chúng tôi sẽ sớm liên hệ qua SĐT <b>{orderRequest.Phone}</b> để giao hàng đến địa chỉ: {orderRequest.Address}.</p>
+                        <br/><p>Trân trọng,<br/>Đội ngũ SangCMS Bikes</p>";
+
+                    // Chạy ngầm tiến trình gửi mail để không làm khựng API
+                    _ = _emailService.SendEmailAsync(customerEmail, subject, body);
+                }
+
+                return Ok(new { success = true, orderId = orderRequest.Id, message = "Đặt hàng thành công." });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Nếu dự án của bạn lưu thông tin khách chung vào bảng Order (CustomerName), 
-                // ta có thể group by để lấy danh sách khách hàng độc bản:
-                var customersFromOrders = await _context.Orders
-                    .Select(o => new { o.CustomerName, o.Address })
-                    .Distinct()
-                    .ToListAsync();
-
-                return Ok(customersFromOrders);
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { message = $"Lỗi hệ thống khi tạo đơn hàng: {ex.Message}" });
             }
         }
 
-        // API ĐĂNG KÝ ĐƠN HÀNG (Có sẵn của bạn)
-        [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
-        {
-            if (order == null) return BadRequest("Dữ liệu đơn hàng không hợp lệ.");
-
-            order.OrderDate = DateTime.Now;
-            order.Status = 0; // 0: Chờ duyệt
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { success = true, orderId = order.Id, message = "Đặt hàng thành công." });
-        }
         // ==========================================
-        // CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (0: Chờ duyệt, 1: Đang giao, 2: Đã xong)
-        // URL: PUT /api/OrdersApi/{id}/status
+        // 4. API CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
         // ==========================================
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] int newStatus)
@@ -121,10 +164,9 @@ namespace CMS.Backend.Controllers
                 var dbOrder = await _context.Orders.FindAsync(id);
                 if (dbOrder == null) return NotFound("Không tìm thấy đơn hàng.");
 
-                // Cập nhật trạng thái mới nhận từ Frontend
                 dbOrder.Status = newStatus;
-
                 await _context.SaveChangesAsync();
+
                 return Ok(new { success = true, message = "Cập nhật trạng thái thành công." });
             }
             catch (Exception ex)
@@ -134,8 +176,7 @@ namespace CMS.Backend.Controllers
         }
 
         // ==========================================
-        // XÓA ĐƠN HÀNG (Xóa cả Chi tiết đơn hàng liên quan để tránh lỗi khóa ngoại)
-        // URL: DELETE /api/OrdersApi/{id}
+        // 5. API XÓA ĐƠN HÀNG
         // ==========================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
@@ -145,14 +186,12 @@ namespace CMS.Backend.Controllers
                 var order = await _context.Orders.FindAsync(id);
                 if (order == null) return NotFound("Không tìm thấy đơn hàng cần xóa.");
 
-                // 1. Xóa các chi tiết thuộc đơn hàng trước
                 var details = _context.OrderDetails.Where(d => d.OrderId == id);
                 _context.OrderDetails.RemoveRange(details);
 
-                // 2. Xóa đơn hàng chính
                 _context.Orders.Remove(order);
-
                 await _context.SaveChangesAsync();
+
                 return Ok(new { success = true, message = "Xóa đơn hàng thành công." });
             }
             catch (Exception ex)

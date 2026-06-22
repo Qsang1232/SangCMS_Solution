@@ -1,4 +1,7 @@
-﻿@model IEnumerable<CMS.Data.Entities.Order>
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<CMS.Data.Entities.Order>
+
 @{
     ViewData["Title"] = "Quản lý đơn hàng";
     Layout = "_LayoutAdmin";
@@ -65,6 +68,18 @@
                     }
                 </tbody>
             </table>
+        </div>
+
+        <div class="card-footer bg-white py-3">
+            <div class="d-flex justify-content-end">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+                    new PagedListRenderOptions
+                    {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                        UlElementClasses = new string[] { "pagination", "mb-0", "pagination-sm" }
+                    })
+            </div>
         </div>
     </div>
 </div>

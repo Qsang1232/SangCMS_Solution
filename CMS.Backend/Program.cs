@@ -1,9 +1,8 @@
 ﻿/*
  * Ho va ten : Nguyễn Quốc Sang
  * Msvv       : 2123110076
- * Noi dung   : Cấu hình hệ thống, CORS, Cookie Authentication và Web API (Buổi 7)
+ * Noi dung   : Cấu hình hệ thống, CORS, Cookie Authentication, Web API và Email Services
  */
-
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 // ==========================================================
 // 1. ĐĂNG KÝ CÁC DỊCH VỤ (SERVICES)
 // ==========================================================
-
 builder.Services.AddControllersWithViews();
 
 // Đăng ký DbContext
@@ -21,22 +19,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Dịch vụ cho Web API
-builder.Services.AddEndpointsApiExplorer(); // Tự động bóc tách Endpoint
-builder.Services.AddSwaggerGen();           // Kích hoạt Swagger UI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// CẤU HÌNH CORS (Chỉ giữ lại một chính sách chuẩn theo yêu cầu Buổi 7)
+// CẤU HÌNH CORS (Chính sách mở cổng cho ReactJS)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001") // Cho phép ReactJS ở port 3000 gọi tới
-              .AllowAnyHeader()                     // Cho phép mọi loại Header (Content-Type, Authorization...)
-              .AllowAnyMethod()                     // Cho phép mọi phương thức HTTP (GET, POST, PUT, DELETE)
-              .AllowCredentials();                  // Hỗ trợ truyền Cookie/Session nếu cần sau này
+        policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
-// Kích hoạt xác thực Cookie
+// Kích hoạt xác thực Cookie cho Admin
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -44,12 +42,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
+// Đăng ký EmailService để dùng ở các Controller (Chức năng gửi mail)
+builder.Services.AddScoped<CMS.Backend.Services.EmailService>();
+
 var app = builder.Build();
 
 // ==========================================================
 // 2. CẤU HÌNH MIDDLEWARE (PIPELINE) - THỨ TỰ RẤT QUAN TRỌNG!
 // ==========================================================
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -79,11 +79,10 @@ app.UseAuthorization();
 // ==========================================================
 // 3. ĐỊNH TUYẾN PHÂN LUỒNG (ROUTING MAP)
 // ==========================================================
-
-// Phân luồng cho Web API (Ánh xạ các Controller API)
+// Phân luồng cho Web API 
 app.MapControllers();
 
-// Phân luồng cho Web MVC
+// Phân luồng cho Web MVC (Trang Quản trị)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

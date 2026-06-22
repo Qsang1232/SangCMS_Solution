@@ -1,25 +1,36 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CMS.Data;
+using CMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CMS.Data;
-using CMS.Data.Entities;
+using X.PagedList;
+using X.PagedList.Extensions;
 
-namespace CMS.Backend.Controllers // Thêm namespace cho chuẩn
+namespace CMS.Backend.Controllers
 {
-    // Yêu cầu phải đăng nhập mới được vào quản lý đơn hàng
     [Authorize]
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public OrdersController(ApplicationDbContext context) => _context = context;
 
-        // 1. Hiển thị danh sách đơn hàng
-        public async Task<IActionResult> Index()
+        public OrdersController(ApplicationDbContext context)
         {
-            var orders = await _context.Orders.OrderByDescending(o => o.OrderDate).ToListAsync();
+            _context = context;
+        }
+
+        // 1. Hiển thị danh sách đơn hàng có phân trang
+        public IActionResult Index(int? page)
+        {
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+
+            var orders = _context.Orders
+                .OrderByDescending(o => o.OrderDate)
+                .ToPagedList(pageNumber, pageSize);
+
             return View(orders);
         }
 
@@ -46,12 +57,12 @@ namespace CMS.Backend.Controllers // Thêm namespace cho chuẩn
         public async Task<IActionResult> Create(Order order)
         {
             order.OrderDate = DateTime.Now;
-            order.Status = 0; // 0: Chờ duyệt
+            order.Status = 0;
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Tạo đơn hàng mới thành công!"; // Thông báo
+            TempData["Success"] = "Tạo đơn hàng mới thành công!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -71,17 +82,16 @@ namespace CMS.Backend.Controllers // Thêm namespace cho chuẩn
             var dbOrder = await _context.Orders.FindAsync(id);
             if (dbOrder == null) return NotFound();
 
-            // CẬP NHẬT ĐẦY ĐỦ CÁC TRƯỜNG BAO GỒM CẢ CỘT TỪ REACT GỬI XUỐNG
             dbOrder.Status = order.Status;
             dbOrder.CustomerName = order.CustomerName;
-            dbOrder.Phone = order.Phone;               // Đã bổ sung
-            dbOrder.TotalAmount = order.TotalAmount;   // Đã bổ sung
+            dbOrder.Phone = order.Phone;
+            dbOrder.TotalAmount = order.TotalAmount;
             dbOrder.Address = order.Address;
             dbOrder.Notes = order.Notes;
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Cập nhật đơn hàng #{id} thành công!"; // Thông báo
+            TempData["Success"] = $"Cập nhật đơn hàng #{id} thành công!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -97,7 +107,7 @@ namespace CMS.Backend.Controllers // Thêm namespace cho chuẩn
                 _context.Orders.Remove(order);
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = $"Đã xóa thành công đơn hàng #{id}."; // Thông báo
+                TempData["Success"] = $"Đã xóa thành công đơn hàng #{id}.";
             }
             return RedirectToAction(nameof(Index));
         }

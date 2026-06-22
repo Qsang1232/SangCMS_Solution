@@ -21,7 +21,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nội dung chi tiết:</label>
-                            <textarea asp-for="Content" class="form-control" rows="10" placeholder="Viết nội dung tại đây..." required></textarea>
+                            <textarea asp-for="Content" id="Content" class="form-control" rows="10" placeholder="Viết nội dung tại đây..." required></textarea>
                         </div>
                     </div>
 
@@ -63,3 +63,15 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('Content', {
+        // Khai báo đường dẫn gọi API Upload Ảnh
+        filebrowserUploadUrl: '/Post/UploadImageFromCKEditor',
+        filebrowserUploadMethod: 'form',
+        height: 450
+        });
+    </script>
+}

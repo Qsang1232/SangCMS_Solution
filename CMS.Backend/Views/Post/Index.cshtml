@@ -1,4 +1,7 @@
-﻿@model IEnumerable<CMS.Data.Entities.Post>
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<CMS.Data.Entities.Post>
+
 @{
     Layout = "_LayoutAdmin";
     ViewData["Title"] = "Quản lý danh sách bài viết - Nguyễn Quốc Sang";
@@ -26,7 +29,7 @@
 
                         <h5 class="card-title text-primary fw-bold text-truncate">@item.Title</h5>
                         <p class="card-text text-muted flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
-                            @item.Content
+                            @Html.Raw(item.Content)
                         </p>
                         <p class="text-muted small mb-3">Ngày đăng: @item.CreatedDate.ToString("dd/MM/yyyy")</p>
 
@@ -47,5 +50,15 @@
                 </div>
             </div>
         }
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+            new PagedListRenderOptions
+            {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" },
+                UlElementClasses = new string[] { "pagination", "mb-0", "pagination-sm" }
+            })
     </div>
 </div>

@@ -1,7 +1,10 @@
-﻿@{
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<CMS.Data.Entities.Product>
+
+@{
     Layout = "_LayoutAdmin";
 }
-@model IEnumerable<CMS.Data.Entities.Product>
 
 <div class="container-fluid mt-3">
     <h2 class="text-primary fw-bold text-uppercase">Danh sách sản phẩm</h2>
@@ -68,4 +71,14 @@
             }
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-end mt-3">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+    new PagedListRenderOptions
+    {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" },
+        UlElementClasses = new string[] { "pagination", "mb-0", "pagination-sm" }
+    })
+    </div>
 </div>

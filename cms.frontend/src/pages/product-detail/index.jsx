@@ -5,7 +5,7 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ProductInfo from './ProductInfo'; // IMPORT FILE CON VÀO
 
-const IMAGE_BASE_URL = "https://localhost:7111";
+const IMAGE_BASE_URL = process.env.REACT_APP_API_URL;
 
 function ProductDetail() {
     const { id } = useParams();

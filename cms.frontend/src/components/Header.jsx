@@ -5,20 +5,41 @@ function Header() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // STATE: Lưu thông tin khách hàng đang đăng nhập
+    // STATE: Lưu thông tin khách hàng đang đăng nhập, từ khóa tìm kiếm và số lượng giỏ hàng
     const [customer, setCustomer] = useState(null);
+    const [keyword, setKeyword] = useState('');
+    const [cartCount, setCartCount] = useState(0);
 
     // Dùng useEffect để lấy thông tin từ LocalStorage mỗi khi load Header
     useEffect(() => {
+        // Lấy thông tin user
         const userData = localStorage.getItem('bikeCustomer');
         if (userData) {
             setCustomer(JSON.parse(userData));
         }
+
+        // Đếm tổng số lượng xe đạp trong giỏ
+        const updateCartCount = () => {
+            const savedCart = localStorage.getItem('bikeCart');
+            const cart = savedCart ? JSON.parse(savedCart) : [];
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            setCartCount(count);
+        };
+
+        updateCartCount();
+
+        // Lắng nghe sự kiện để cập nhật số lượng giỏ hàng khi có thay đổi
+        window.addEventListener('storage', updateCartCount);
+        return () => window.removeEventListener('storage', updateCartCount);
     }, []);
 
+    // Xử lý sự kiện tìm kiếm
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        alert("Chức năng tìm kiếm sản phẩm xe đạp sẽ được cập nhật!");
+        if (keyword.trim() !== '') {
+            // Đẩy từ khóa sang trang Shop để component Shop nhận và gọi API lọc
+            navigate(`/shop?keyword=${keyword}`);
+        }
     };
 
     // Hàm Xử lý Đăng xuất
@@ -58,10 +79,8 @@ function Header() {
                         </span>
                     </div>
 
-                    {/* KHU VỰC THAY ĐỔI: KIỂM TRA ĐĂNG NHẬP */}
                     <div className="top-bar-right d-flex align-items-center">
                         {customer ? (
-                            // NẾU ĐÃ ĐĂNG NHẬP
                             <>
                                 <span className="text-light mr-3">
                                     <i className="fas fa-user-circle mr-1" style={{ color: '#FF5A00', fontSize: '16px' }}></i>
@@ -76,7 +95,6 @@ function Header() {
                                 </button>
                             </>
                         ) : (
-                            // NẾU CHƯA ĐĂNG NHẬP
                             <>
                                 <Link to="/login" className="text-light mr-3 text-decoration-none transition-link">
                                     <i className="fas fa-user mr-1"></i> Đăng nhập
@@ -90,7 +108,7 @@ function Header() {
                 </div>
             </div>
 
-            {/* TẦNG 2: LOGO & SEARCH (Giữ nguyên của bạn) */}
+            {/* TẦNG 2: LOGO & SEARCH */}
             <div className="main-header py-3 border-bottom">
                 <div className="container">
                     <div className="row align-items-center">
@@ -105,7 +123,14 @@ function Header() {
 
                         <div className="col-md-6 d-none d-md-block">
                             <form className="input-group" onSubmit={handleSearchSubmit}>
-                                <input type="text" className="form-control border-right-0 shadow-none" placeholder="Tìm kiếm xe đạp MTB, Road, phụ kiện..." style={{ borderRadius: '25px 0 0 25px', fontSize: '14px', borderColor: '#e0e0e0' }} />
+                                <input
+                                    type="text"
+                                    className="form-control border-right-0 shadow-none"
+                                    placeholder="Tìm kiếm xe đạp MTB, Road, phụ kiện..."
+                                    value={keyword}
+                                    onChange={(e) => setKeyword(e.target.value)}
+                                    style={{ borderRadius: '25px 0 0 25px', fontSize: '14px', borderColor: '#e0e0e0' }}
+                                />
                                 <div className="input-group-append">
                                     <button className="btn px-4 text-white" type="submit" style={{ borderRadius: '0 25px 25px 0', backgroundColor: '#FF5A00', borderColor: '#FF5A00' }}>
                                         <i className="fas fa-search"></i>
@@ -118,8 +143,7 @@ function Header() {
                             <Link to="/cart" className="btn position-relative p-2 text-dark transition-link" style={{ fontSize: '24px' }}>
                                 <i className="fas fa-shopping-cart"></i>
                                 <span className="badge badge-pill position-absolute" style={{ top: '0', right: '-5px', backgroundColor: '#FF5A00', color: '#fff', fontSize: '11px', border: '2px solid #fff' }}>
-                                    {/* Bạn có thể code thêm lấy số lượng giỏ hàng thật vào đây sau */}
-                                    2
+                                    {cartCount}
                                 </span>
                             </Link>
                         </div>

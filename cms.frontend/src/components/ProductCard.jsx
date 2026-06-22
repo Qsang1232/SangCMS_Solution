@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const IMAGE_BASE_URL = "https://localhost:7111"; // Đảm bảo link này khớp với Backend của bạn
+const IMAGE_BASE_URL = process.env.REACT_APP_API_URL;
 
 function ProductCard({ item }) {
     // Hàm định dạng giá tiền

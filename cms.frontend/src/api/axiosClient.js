@@ -1,14 +1,13 @@
 ﻿import axios from 'axios';
 
-// Khởi tạo một thực thể axios với cấu hình base chung
 const axiosClient = axios.create({
-    baseURL: 'https://localhost:7111/api', // Đổi lại đúng cổng Port Backend của máy các em
+    // Lấy link từ file .env, cộng thêm '/api'
+    baseURL: process.env.REACT_APP_API_URL + '/api',
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 10000, // Thời gian tối đa chờ phản hồi từ server (10 giây)
+    timeout: 10000,
 });
-
 // Giải thích: Interceptor giúp chúng ta can thiệp vào dữ liệu trước khi trả về cho component
 axiosClient.interceptors.response.use(
     (response) => {
