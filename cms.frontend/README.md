@@ -1,70 +1,40 @@
-# Getting Started with Create React App
+# 🚲 SangCMS Bikes - Hệ thống Quản lý và Bán xe đạp trực tuyến
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Sinh viên thực hiện:** Nguyễn Quốc Sang
+**Mã sinh viên:** 2123110076
 
-## Available Scripts
+Đây là đồ án chuyên ngành ứng dụng kiến trúc 3 phân tầng (3-tier architecture) kết hợp giữa **ASP.NET Core Web API / MVC** (Backend) và **ReactJS** (Frontend).
 
-In the project directory, you can run:
+## 🚀 Hướng dẫn khởi chạy dự án
 
-### `npm start`
+### 1. Khởi chạy Backend (.NET Core)
+- Mở file Solution `SangCMS_Solution.sln` bằng **Visual Studio**.
+- Đảm bảo dự án `CMS.Backend` được đặt làm **Startup Project** (Click chuột phải vào CMS.Backend -> Chọn *Set as Startup Project*).
+- Mở file `appsettings.json`, kiểm tra và cập nhật chuỗi kết nối cơ sở dữ liệu `DefaultConnection`.
+- Mở **Package Manager Console** (PMC), chọn *Default project* là `CMS.Data` và chạy lệnh cập nhật CSDL:
+Update-Database
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Nhấn phím **F5** (hoặc nút Run) để khởi chạy máy chủ Backend và giao diện Swagger API.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 2. Khởi chạy Frontend (ReactJS)
+- Mở một cửa sổ Terminal/Command Prompt mới.
+- Di chuyển vào thư mục Frontend:
+```bash
+cd cms.frontendCài đặt các gói thư viện cần thiết (chỉ cần chạy lần đầu):
 
-### `npm test`
+Bash
+npm install
+Khởi chạy ứng dụng ReactJS:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Bash
+npm start
+Trình duyệt sẽ tự động mở trang web tại địa chỉ http://localhost:3000.
 
-### `npm run build`
+⚙️ Các công nghệ sử dụng
+Backend: C#, ASP.NET Core MVC & Web API, Entity Framework Core, SQL Server.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Frontend: ReactJS, Bootstrap, Axios.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Bảo mật & Tiện ích: BCrypt (Mã hóa mật khẩu), Cookie Authentication, CKEditor 4, X.PagedList (Phân trang), MailKit (Gửi Email SMTP).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
