@@ -158,8 +158,8 @@ function Header() {
                         <ul className="navbar-nav w-100 justify-content-center pt-2 pb-2">
                             <li className="nav-item mx-3"><Link to="/" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Trang Chủ</Link></li>
                             <li className="nav-item mx-3"><Link to="/shop" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/shop')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Cửa Hàng</Link></li>
-                            <li className="nav-item mx-3"><Link to="/blog" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/blog')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Tin Tức</Link></li>
-                            <li className="nav-item mx-3"><Link to="/post" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/post')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Cộng Đồng Đạp Xe</Link></li>
+                            <li className="nav-item mx-3"><Link to="/blog" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/blog')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Tin Tức/Blog</Link></li>
+                            <li className="nav-item mx-3"><Link to="/post" className={`nav-link pb-1 px-0 text-decoration-none text-uppercase font-weight-bold ${isActive('/post')}`} style={{ fontSize: '14px', transition: 'all 0.2s' }}>Về Chúng Tôi</Link></li>
                         </ul>
                     </nav>
                 </div>

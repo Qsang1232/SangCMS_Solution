@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
@@ -69,8 +69,26 @@ namespace CMS.Backend.Controllers
                 // Tìm khách hàng có Email khớp với dữ liệu gửi lên
                 var user = await _context.Customers.FirstOrDefaultAsync(c => c.Email == loginData.Email);
 
-                // Giải mã và so sánh mật khẩu BCrypt
-                if (user == null || !BCrypt.Net.BCrypt.Verify(loginData.Password, user.Password))
+                if (user == null)
+                {
+                    return Unauthorized(new { message = "Sai email hoặc mật khẩu!" });
+                }
+
+                bool isPasswordValid = false;
+                try
+                {
+                    // Thử giải mã BCrypt (dành cho mật khẩu mới đã băm)
+                    isPasswordValid = BCrypt.Net.BCrypt.Verify(loginData.Password, user.Password);
+                }
+                catch
+                {
+                    // BẤT ĐỒNG BỘ: Mật khẩu cũ trong database đang là văn bản thô (Plain text),
+                    // BCrypt.Verify sẽ quăng lỗi Exception vì định dạng hash không đúng.
+                    // Chúng ta Catch lại và so sánh trực tiếp văn bản thô luôn.
+                    isPasswordValid = (user.Password == loginData.Password);
+                }
+
+                if (!isPasswordValid)
                 {
                     return Unauthorized(new { message = "Sai email hoặc mật khẩu!" });
                 }

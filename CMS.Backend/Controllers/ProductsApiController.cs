@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,11 +19,42 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        // 1. API LẤY DANH SÁCH TẤT CẢ SẢN PHẨM (GET: api/ProductsApi)
+        // 1. API LẤY DANH SÁCH SẢN PHẨM CÓ BỘ LỌC (GET: api/ProductsApi?categoryProductId=1&minPrice=100000&maxPrice=500000&keyword=mtb)
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
+            [FromQuery] int? categoryProductId,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] string? keyword)
         {
-            return await _context.Products.OrderByDescending(p => p.Id).ToListAsync();
+            // Bắt đầu từ toàn bộ sản phẩm
+            var query = _context.Products.AsQueryable();
+
+            // Lọc theo danh mục sản phẩm
+            if (categoryProductId.HasValue)
+            {
+                query = query.Where(p => p.CategoryProductId == categoryProductId.Value);
+            }
+
+            // Lọc theo khoảng giá TỪ
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+
+            // Lọc theo khoảng giá ĐẾN
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+
+            // Lọc theo từ khóa tìm kiếm (tìm trong tên hoặc mô tả)
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(p => p.Name.Contains(keyword) || (p.Description != null && p.Description.Contains(keyword)));
+            }
+
+            return await query.OrderByDescending(p => p.Id).ToListAsync();
         }
 
         // 2. API LẤY CHI TIẾT MỘT SẢN PHẨM THEO ID (GET: api/ProductsApi/5)

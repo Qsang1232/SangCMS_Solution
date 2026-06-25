@@ -1,40 +1,73 @@
-# 🚲 SangCMS Bikes - Hệ thống Quản lý và Bán xe đạp trực tuyến
+# 🚴 SangCMS Bikes - Hệ Thống Quản Lý Cửa Hàng Xe Đạp
 
-**Sinh viên thực hiện:** Nguyễn Quốc Sang
-**Mã sinh viên:** 2123110076
+> **Sinh viên:** Nguyễn Quốc Sang  
+> **MSSV:** 2123110076  
+> **Môn:** Chuyên Đề ASP.NET  
 
-Đây là đồ án chuyên ngành ứng dụng kiến trúc 3 phân tầng (3-tier architecture) kết hợp giữa **ASP.NET Core Web API / MVC** (Backend) và **ReactJS** (Frontend).
+---
 
-## 🚀 Hướng dẫn khởi chạy dự án
+## 📁 Cấu Trúc Dự Án (3 Phân Tầng)
 
-### 1. Khởi chạy Backend (.NET Core)
-- Mở file Solution `SangCMS_Solution.sln` bằng **Visual Studio**.
-- Đảm bảo dự án `CMS.Backend` được đặt làm **Startup Project** (Click chuột phải vào CMS.Backend -> Chọn *Set as Startup Project*).
-- Mở file `appsettings.json`, kiểm tra và cập nhật chuỗi kết nối cơ sở dữ liệu `DefaultConnection`.
-- Mở **Package Manager Console** (PMC), chọn *Default project* là `CMS.Data` và chạy lệnh cập nhật CSDL:
-Update-Database
+```
+SangCMS_Solution-Buoi-8/
+├── CMS.Data/            → Tầng dữ liệu (Entity Framework Core, 8 Entities)
+├── CMS.Backend/         → Tầng xử lý (ASP.NET Core MVC + Web API)
+├── cms.frontend/        → Tầng giao diện khách hàng (ReactJS)
+└── Sang-CMS_Solution.sln → File Solution tổng
+```
 
-- Nhấn phím **F5** (hoặc nút Run) để khởi chạy máy chủ Backend và giao diện Swagger API.
+---
 
-### 2. Khởi chạy Frontend (ReactJS)
-- Mở một cửa sổ Terminal/Command Prompt mới.
-- Di chuyển vào thư mục Frontend:
-```bash
-cd cms.frontend Cài đặt các gói thư viện cần thiết (chỉ cần chạy lần đầu):
+## 🔧 Hướng Dẫn Chạy Dự Án
 
-Bash
-npm install
-Khởi chạy ứng dụng ReactJS:
+### 1. Chạy Backend (ASP.NET Core)
 
-Bash
-npm start
-Trình duyệt sẽ tự động mở trang web tại địa chỉ http://localhost:3000.
+1. Mở file `Sang-CMS_Solution.sln` bằng **Visual Studio 2022**.
+2. Đảm bảo đã cài **SQL Server** (LocalDB hoặc SQL Server Express).
+3. Mở **Package Manager Console**, chọn Default Project là `CMS.Data`, chạy lệnh:
+   ```
+   Update-Database
+   ```
+4. Nhấn **F5** để khởi chạy Backend.
+5. Backend sẽ chạy tại: `https://localhost:7111`
+6. Truy cập Swagger UI tại: `https://localhost:7111/swagger`
 
-⚙️ Các công nghệ sử dụng
-Backend: C#, ASP.NET Core MVC & Web API, Entity Framework Core, SQL Server.
+### 2. Chạy Frontend (ReactJS)
 
-Frontend: ReactJS, Bootstrap, Axios.
+1. Mở terminal tại thư mục `cms.frontend/`.
+2. Cài đặt thư viện:
+   ```bash
+   npm install
+   ```
+3. Khởi chạy ứng dụng React:
+   ```bash
+   npm start
+   ```
+4. Trình duyệt sẽ tự mở tại: `http://localhost:3000`
 
-Bảo mật & Tiện ích: BCrypt (Mã hóa mật khẩu), Cookie Authentication, CKEditor 4, X.PagedList (Phân trang), MailKit (Gửi Email SMTP).
+> **Lưu ý:** Backend phải được chạy trước (bước 1) để Frontend có thể nạp dữ liệu từ API.
 
+---
 
+## 🗄️ Cơ Sở Dữ Liệu (8 Bảng)
+
+| STT | Tên Bảng          | Mô Tả                          |
+|-----|--------------------|---------------------------------|
+| 1   | Categories         | Danh mục bài viết               |
+| 2   | Posts              | Bài viết / Tin tức              |
+| 3   | Users              | Tài khoản quản trị viên         |
+| 4   | CategoriesProducts | Danh mục sản phẩm               |
+| 5   | Products           | Sản phẩm xe đạp                 |
+| 6   | Customers          | Tài khoản khách hàng            |
+| 7   | Orders             | Đơn hàng                        |
+| 8   | OrderDetails       | Chi tiết đơn hàng               |
+
+---
+
+## ⚙️ Công Nghệ Sử Dụng
+
+- **Backend:** ASP.NET Core 8, Entity Framework Core, Cookie Authentication
+- **Frontend:** ReactJS 19, React Router DOM, Axios
+- **Database:** SQL Server (LocalDB)
+- **Bảo mật:** BCrypt (băm mật khẩu), CORS, [Authorize], [Authorize(Roles)]
+- **Tiện ích:** CKEditor 4, X.PagedList, Swagger UI, EmailService (SMTP Gmail)

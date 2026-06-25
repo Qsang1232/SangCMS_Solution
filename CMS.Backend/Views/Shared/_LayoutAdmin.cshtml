@@ -1,4 +1,4 @@
-﻿@{
+@{
     // Lấy tên Controller hiện tại để làm sáng menu Sidebar tương ứng
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
@@ -58,6 +58,7 @@
                     <a asp-controller="Category" asp-action="Index" class="@(currentController == "Category" ? "active" : "")"><i class="bi bi-grid me-2"></i> Danh mục</a>
                     <a asp-controller="Post" asp-action="Index" class="@(currentController == "Post" ? "active" : "")"><i class="bi bi-file-earmark-post me-2"></i> Bài viết</a>
                     <a asp-controller="User" asp-action="Index" class="@(currentController == "User" ? "active" : "")"><i class="bi bi-people me-2"></i> Thành viên</a>
+                    <a asp-controller="Customers" asp-action="Index" class="@(currentController == "Customers" ? "active" : "")"><i class="bi bi-person-lines-fill me-2"></i> Khách hàng</a>
                     <a asp-controller="Products" asp-action="Index" class="@(currentController == "Products" ? "active" : "")"><i class="bi bi-box-seam me-2"></i> Sản phẩm</a>
                     <a asp-controller="Orders" asp-action="Index" class="@(currentController == "Orders" ? "active" : "")"><i class="bi bi-cart-check me-2"></i> Đơn hàng</a>
                 </div>

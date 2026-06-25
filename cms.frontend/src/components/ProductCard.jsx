@@ -1,9 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const IMAGE_BASE_URL = process.env.REACT_APP_API_URL;
 
 function ProductCard({ item }) {
+    const navigate = useNavigate();
+
     // Hàm định dạng giá tiền
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -11,6 +13,14 @@ function ProductCard({ item }) {
 
     // Hàm thêm nhanh 1 sản phẩm vào giỏ hàng
     const handleQuickAddToCart = () => {
+        // Kiểm tra quyền đăng nhập
+        const customer = localStorage.getItem('bikeCustomer');
+        if (!customer) {
+            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');
+            navigate('/login');
+            return;
+        }
+
         // 1. Lấy giỏ hàng cũ từ bộ nhớ
         const savedCart = localStorage.getItem('bikeCart');
         let cart = savedCart ? JSON.parse(savedCart) : [];

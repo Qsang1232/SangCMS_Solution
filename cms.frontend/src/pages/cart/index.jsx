@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import CartTable from './CartTable'; // IMPORT BẢNG VÀO ĐÂY
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        // Kiểm tra đăng nhập
+        const customer = localStorage.getItem('bikeCustomer');
+        if (!customer) {
+            alert('Bạn cần đăng nhập để xem giỏ hàng!');
+            navigate('/login');
+            return;
+        }
+
         const savedCart = localStorage.getItem('bikeCart');
         if (savedCart) setCartItems(JSON.parse(savedCart));
-    }, []);
+    }, [navigate]);
 
     const updateCart = (newCart) => {
         setCartItems(newCart);

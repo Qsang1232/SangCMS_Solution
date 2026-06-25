@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import productService from '../../services/productService';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -9,6 +9,7 @@ const IMAGE_BASE_URL = process.env.REACT_APP_API_URL;
 
 function ProductDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
@@ -31,6 +32,14 @@ function ProductDetail() {
     const formatPrice = (price) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 
     const handleAddToCart = () => {
+        // Kiểm tra quyền đăng nhập
+        const customer = localStorage.getItem('bikeCustomer');
+        if (!customer) {
+            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');
+            navigate('/login');
+            return;
+        }
+
         if (quantity > product.stockQuantity) {
             alert(`⛔ Lỗi hệ thống kho: Cửa hàng chỉ còn tối đa ${product.stockQuantity} chiếc!`);
             return;

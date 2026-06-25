@@ -2,7 +2,7 @@
 
 > **Sinh viên:** Nguyễn Quốc Sang  
 > **MSSV:** 2123110076  
-> **Môn:** Chuyên Đề Thực Tập  
+> **Môn:** Chuyên Đề ASP.NET 
 
 ---
 
