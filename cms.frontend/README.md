@@ -20,7 +20,7 @@ Update-Database
 - Mở một cửa sổ Terminal/Command Prompt mới.
 - Di chuyển vào thư mục Frontend:
 ```bash
-cd cms.frontendCài đặt các gói thư viện cần thiết (chỉ cần chạy lần đầu):
+cd cms.frontend Cài đặt các gói thư viện cần thiết (chỉ cần chạy lần đầu):
 
 Bash
 npm install

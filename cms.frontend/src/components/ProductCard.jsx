@@ -39,23 +39,37 @@ function ProductCard({ item }) {
     };
 
     return (
-        <div className="card h-100 shadow-sm border-0 rounded">
-            {/* Ảnh sản phẩm */}
-            <div className="text-center p-3" style={{ height: '200px', backgroundColor: '#f8f9fa' }}>
+        <div className="card h-100 shadow-sm border-0 rounded" style={{ transition: 'transform 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+            {/* Ảnh sản phẩm - chiều cao cố định */}
+            <div className="text-center p-3 d-flex align-items-center justify-content-center" style={{ height: '220px', backgroundColor: '#f8f9fa', borderRadius: '8px 8px 0 0' }}>
                 <img
                     src={IMAGE_BASE_URL + item.imageUrl}
                     alt={item.name}
-                    className="img-fluid h-100"
-                    style={{ objectFit: 'contain' }}
+                    className="img-fluid"
+                    style={{ maxHeight: '190px', objectFit: 'contain' }}
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200x200?text=No+Image'; }}
                 />
             </div>
 
             {/* Thông tin sản phẩm */}
-            <div className="card-body d-flex flex-column">
-                <h6 className="font-weight-bold text-dark text-truncate" title={item.name}>
+            <div className="card-body d-flex flex-column" style={{ minHeight: '150px' }}>
+                <h6 className="font-weight-bold text-dark mb-2" title={item.name}
+                    style={{
+                        height: '40px',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        fontSize: '14px',
+                        lineHeight: '20px'
+                    }}
+                >
                     {item.name}
                 </h6>
-                <h6 className="font-weight-bold text-danger mb-3">
+                <h6 className="font-weight-bold text-danger mb-3" style={{ fontSize: '15px' }}>
                     {formatPrice(item.price)}
                 </h6>
 

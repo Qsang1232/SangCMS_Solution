@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // IMPORT CÁC TRANG CHỨC NĂNG
@@ -15,6 +15,7 @@ import Checkout from './pages/checkout/index';
 // ---------------------------------------------
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import Post from './pages/post/index';
 
 function App() {
     return (
@@ -29,6 +30,7 @@ function App() {
                         <Route path="/blog/:id" element={<BlogDetail />} />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/checkout" element={<Checkout />} />
+                        <Route path="/post" element={<Post />} />
 
                         {/* --------------------------------------------- */}
                         {/* BỔ SUNG THÊM 2 ĐỊA CHỈ ROUTE NÀY */}

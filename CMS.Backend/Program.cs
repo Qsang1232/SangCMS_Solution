@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Ho va ten : Nguyễn Quốc Sang
  * Msvv       : 2123110076
  * Noi dung   : Cấu hình hệ thống, CORS, Cookie Authentication, Web API và Email Services
@@ -12,7 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 // ==========================================================
 // 1. ĐĂNG KÝ CÁC DỊCH VỤ (SERVICES)
 // ==========================================================
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Fix lỗi 500 (Vòng lặp vô hạn JSON giữa Product và CategoryProduct)
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 // Đăng ký DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

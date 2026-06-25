@@ -1,4 +1,4 @@
-﻿/*
+/*
  *Ho va ten :Nguyễn Quốc Sang
  *Msvv:2123110076
  *Ngay tao:14/5/2026 
@@ -37,6 +37,7 @@ namespace CMS.Data.Entities
         public int CategoryProductId { get; set; }
 
         [ForeignKey("CategoryProductId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual CategoryProduct? CategoryProduct { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CMS.Data;
 using CMS.Data.Entities;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace CMS.Backend.Controllers
 {
@@ -25,14 +27,19 @@ namespace CMS.Backend.Controllers
         }
 
         // ==========================================
-        // 1. TRANG DANH SÁCH SẢN PHẨM (INDEX)
+        // 1. TRANG DANH SÁCH SẢN PHẨM (INDEX) - CÓ PHÂN TRANG
         // ==========================================
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
+            int pageNumber = page ?? 1;
+            int pageSize = 6; // Hiển thị 6 sản phẩm mỗi trang
+
             var products = await _context.Products
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
-            return View(products);
+
+            var pagedProducts = products.ToPagedList(pageNumber, pageSize);
+            return View(pagedProducts);
         }
 
         // ==========================================

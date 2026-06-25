@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import blogService from '../../services/postService';
+import blogService from '../services/postService';
 // IMPORT  component CON VÀO ĐỂ SỬ DỤNG
-import PostCard from '../../components/PostCard';
+import PostCard from './PostCard';
 
 
 
